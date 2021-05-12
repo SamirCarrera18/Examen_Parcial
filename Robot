@@ -1,0 +1,161 @@
+#include <iostream>
+#include<string>
+using namespace std;
+
+void ImpMapa(int x, int y, string map[][50]){
+	cout<<"   ";
+	for(int i=0; i<=x; i++){
+		cout<<i<<" ";
+	}cout<<"\n  ";
+	for(int i=0; i<=x; i++){
+		cout<<"--";
+	}cout<<"-"<<"\n";
+	
+	for(int j=0;j<=y;j++){
+		cout<<j<<" |";
+		for(int i=0; i<=x; i++){
+			cout<<map[j][i]<<"|";
+		}cout<<"\n  ";
+		for(int i=0; i<=x; i++){
+			cout<<"--";
+		}cout<<"-"<<"\n";
+	}
+}
+string *CrearMapa(int x, int y, string map[][50]){
+	for(int i=0; i<50; i++){
+		for(int j=0; j<50;j++){
+			map[i][j]=" ";
+		}
+	}
+	return *map;
+}
+string Direccion(string direc){
+	if(direc == "n" || direc == "N"){
+		direc="^";
+	}if(direc == "e" || direc == "E"){
+		direc=">";
+	}if(direc == "s" || direc == "S"){
+		direc="v";
+	}if(direc == "o" || direc == "O"){
+		direc="<";
+	}if(direc != "^" && direc != ">" && direc != "v" && direc != "<"){
+		cout<<"ERROR EN LA COLOCACION DE LA DIRECCION\n";
+		direc="f";
+	}
+	
+	
+	return direc;
+}
+string *Pos_robot(string map[][50],int x, int y, int rx,int ry, string direc ){
+	
+	for(int i=0; i<=x; i++){
+		for(int j=0; j<=y; j++){
+			if(i==rx && j==ry){
+				map[j][i]=direc;
+			}
+		}
+	}
+	return *map;
+}
+
+void Momivientos(char movs[],string map[][50],string direc,int x,int y,int rx,int ry){
+	for(int i=0; i<15; i++){
+		if(rx >= 0 && rx <= x && ry >= 0 && ry <= y){
+			switch(movs[i]){
+				case 'D':
+					if(direc=="^"){
+						direc=">";
+						break;
+					}
+					if(direc==">"){
+						direc="v";
+						break;
+					}
+					if(direc=="v"){
+						direc="<";
+						break;
+					}
+					if(direc=="<"){
+						direc="^";
+						break;
+					}
+				case 'I':
+					if(direc=="^"){
+						direc="<";
+						break;
+					}
+					if(direc==">"){
+						direc="^";
+						break;
+					}
+					if(direc=="v"){
+						direc=">";
+						break;
+					}
+					if(direc=="<"){
+						direc="v";
+						break;
+					}
+				case'A':
+					if(direc=="^"){
+						rx--;
+						break;
+					}
+					if(direc==">"){
+						ry++;
+						break;
+					}
+					if(direc=="v"){
+						rx++;
+						break;
+					}
+					if(direc=="<"){
+						ry--;
+						break;
+					}
+					
+			}
+		}else{
+			cout<<"El robot se ha perdido\n";
+			break;
+		}
+	}
+	CrearMapa(x,y,map);
+	Pos_robot(map, x, y, rx, ry, direc);
+	ImpMapa(x,y,map);
+}
+
+int main() {
+	int x,y,rx,ry;
+	char movs[15];
+	string direc;
+	string map[50][50];
+	cout<<"Ingrese el tamaño del mapa(x y): ";cin>>x; cin>>y;
+	if((x<=50 && x>=0) || (y<=50 && y>=0)){
+		cout<<"Ingrese la posicion del robot(x y): ";cin>>rx; cin>>ry;
+		if((rx<=x && rx>=0) || (ry<=x && ry>=0)){
+			cout<<"Ingrese la direccion inicial (N =Norte),(S =Sur),(E =Este),(O =Oeste): ";cin>>direc;
+			CrearMapa(x,y,map);
+			direc=Direccion(direc);
+			if(direc!="f"){
+				Pos_robot(map, x, y, rx, ry, direc);
+				ImpMapa(x,y,map);
+				system("pause");
+				system("cls");
+				cout<<"- D - El robot va a girar hacia la derecha\n";
+				cout<<"- I - El robot va a girar hacia la izquierda\n";
+				cout<<"- A - El robot avance un casillero\n\n";
+				cout<<"ADVERTENCIA - Si no esta escrito en mayuscula, no sera considerado\n\n";
+				cout<<"- Ingrese los movimientos del robot(Maximo 15 movimientos): ";cin>>movs;
+				
+				Momivientos(movs, map, direc, x, y, rx, ry);
+				
+			}
+		}else{
+			cout<<"ERROR EN LA COLOCACION DE LAS COORDENADAS DEL ROBOT";
+		}
+	}else{
+		cout<<"ERROR EN LA COLOCACION DEL TAMAÑO DEL MAPA";
+	}
+	return 0;
+}
